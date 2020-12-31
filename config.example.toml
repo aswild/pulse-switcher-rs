@@ -1,0 +1,19 @@
+# pulse-switcher config file (XDG_CONFIG_HOME/pulse-switcher/config.toml)
+#
+# pulse-switcher lists the available PulseAudio sinks, filters down a list of
+# "matching" devices, and then switches the default sink to the next entry in
+# the list. Here, "next" is determined based on the order in which libpulse
+# enumerates the sinks. If the current default is not in the list of matching
+# devices, then the first matching device will be chosen.
+
+# Filtering can be done on the device name or device description. name_patterns
+# and desc_patterns are arrays of strings. A device will be selected if it
+# matches EITHER a name or description pattern. Patterns are rust regexes.
+# If no name or description patterns are specified, then match all devices.
+include_names = ['(?i)astro.*a50.*game', 'analog-stereo']
+include_descriptions = []
+
+# These patterns can be used to exclude devices that would otherwise by included
+# by the patterns above.
+exclude_names = []
+exclude_descriptions = []

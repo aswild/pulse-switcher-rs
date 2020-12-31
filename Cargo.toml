@@ -1,0 +1,15 @@
+[package]
+name = "pulse-switcher"
+version = "0.1.0"
+authors = ["Allen Wild <allenwild93@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0.36"
+dirs-next = "2.0.0"
+pulsectl = { git = "https://github.com/aswild/pulsectl" }
+regex = "1.4.2"
+serde = { version = "1.0.118", features = ["derive"] }
+structopt = "0.3.21"
+toml = "0.5.8"
+yall = "0.4.0"
