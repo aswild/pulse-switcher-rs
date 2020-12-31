@@ -157,13 +157,16 @@ fn default_config() -> Result<DeviceFilter> {
     global_setting = AppSettings::DisableHelpSubcommand,
 )]
 struct Args {
-    /// Verbose output. Specify once for debug, twice for trace
+    /// Verbose output, can be repeated.
+    ///
+    /// Pass once to add debug messages, twice for trace messages.
     #[structopt(global = true, short, long, parse(from_occurrences))]
     verbose: u64,
 
-    /// Quiet output. Overrides --verbose, specify once to hide info, twice to hide
-    /// warnings/errors.
-    #[structopt(global = true, short, long, parse(from_occurrences))]
+    /// Quiet output, can be repeated. Conflicts with --verbose
+    ///
+    /// Pass to show only warnings/errors, twice for only errors, thrice for silence.
+    #[structopt(global = true, short, long, parse(from_occurrences), conflicts_with = "verbose")]
     quiet: u64,
 
     /// Config file path. Default '$XDG_CONFIG_HOME/pulse-switcher/config.toml' if it exists.
@@ -191,12 +194,7 @@ enum Command {
 
 fn run() -> Result<()> {
     let args = Args::from_args();
-    Logger::with_verbosity(if args.quiet != 0 {
-        3u64.saturating_sub(args.quiet)
-    } else {
-        3 + args.verbose
-    })
-    .init();
+    Logger::new().verbose(args.verbose).quiet(args.quiet).init();
 
     let dev_filter = match args.config_file {
         Some(ref file) => {
