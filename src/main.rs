@@ -84,12 +84,12 @@ impl DeviceFilter {
             Ok(Some(res))
         }
 
-        let mut ret = DeviceFilter::default();
-        ret.include_name = parse_regex_set(&conf.include_names)?;
-        ret.include_desc = parse_regex_set(&conf.include_descriptions)?;
-        ret.exclude_name = parse_regex_set(&conf.exclude_names)?;
-        ret.exclude_desc = parse_regex_set(&conf.exclude_descriptions)?;
-        Ok(ret)
+        Ok(DeviceFilter {
+            include_name: parse_regex_set(&conf.include_names)?,
+            include_desc: parse_regex_set(&conf.include_descriptions)?,
+            exclude_name: parse_regex_set(&conf.exclude_names)?,
+            exclude_desc: parse_regex_set(&conf.exclude_descriptions)?,
+        })
     }
 
     fn filter(&self, dev: &Device) -> bool {
