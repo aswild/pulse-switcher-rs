@@ -5,11 +5,11 @@ authors = ["Allen Wild <allenwild93@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-anyhow = "1.0.36"
-dirs-next = "2.0.0"
+anyhow = "1"
+dirs-next = "2"
 pulsectl = { git = "https://github.com/aswild/pulsectl" }
-regex = "1.4.2"
-serde = { version = "1.0.118", features = ["derive"] }
-structopt = "0.3.21"
-toml = "0.5.8"
-yall = "0.5.0"
+regex = "1.5"
+serde = { version = "1", features = ["derive"] }
+structopt = "0.3"
+toml = "0.5"
+yall = "0.5"
