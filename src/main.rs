@@ -3,10 +3,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::{ensure, Context, Result};
+use clap::{ArgAction, Parser};
 use pulsectl::controllers::{types::DeviceInfo, DeviceControl, SinkController};
 use regex::RegexSet;
 use serde::Deserialize;
-use structopt::{clap::AppSettings, StructOpt};
 use yall::{log_macros::*, Logger};
 
 /// subset of DeviceInfo that we care about, specifically with name/description strings un-optioned
@@ -77,11 +77,11 @@ struct DeviceFilter {
 impl DeviceFilter {
     fn from_config(conf: &Config) -> Result<DeviceFilter> {
         fn parse_regex_set(v: &[String]) -> Result<Option<RegexSet>> {
-            if v.is_empty() {
-                return Ok(None);
-            }
-            let res = RegexSet::new(v)?;
-            Ok(Some(res))
+            Ok(if v.is_empty() {
+                None
+            } else {
+                Some(RegexSet::new(v)?)
+            })
         }
 
         Ok(DeviceFilter {
@@ -150,34 +150,30 @@ fn default_config() -> Result<DeviceFilter> {
     }
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(
-    max_term_width = 120,
-    global_setting = AppSettings::ColoredHelp,
-    global_setting = AppSettings::DisableHelpSubcommand,
-)]
+#[derive(Debug, Parser)]
+#[clap(disable_help_subcommand = true, max_term_width = 120, version)]
 struct Args {
     /// Verbose output, can be repeated.
     ///
     /// Pass once to add debug messages, twice for trace messages.
-    #[structopt(global = true, short, long, parse(from_occurrences))]
-    verbose: u64,
+    #[clap(global = true, short, long, action = ArgAction::Count)]
+    verbose: u8,
 
     /// Quiet output, can be repeated. Conflicts with --verbose
     ///
     /// Pass to show only warnings/errors, twice for only errors, thrice for silence.
-    #[structopt(global = true, short, long, parse(from_occurrences), conflicts_with = "verbose")]
-    quiet: u64,
+    #[clap(global = true, short, long, action = ArgAction::Count, conflicts_with = "verbose")]
+    quiet: u8,
 
     /// Config file path. Default '$XDG_CONFIG_HOME/pulse-switcher/config.toml' if it exists.
-    #[structopt(global = true, short, long = "config", value_name = "FILE")]
+    #[clap(global = true, short, long = "config", value_name = "FILE")]
     config_file: Option<PathBuf>,
 
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     cmd: Option<Command>,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, clap::Subcommand)]
 enum Command {
     /// List devices. (default command)
     ///
@@ -193,8 +189,8 @@ enum Command {
 }
 
 fn run() -> Result<()> {
-    let args = Args::from_args();
-    Logger::new().verbose(args.verbose).quiet(args.quiet).init();
+    let args = Args::parse();
+    Logger::new().verbose(args.verbose.into()).quiet(args.quiet.into()).init();
 
     let dev_filter = match args.config_file {
         Some(ref file) => {

@@ -6,10 +6,10 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1"
+clap = { version = "3.2", features = ["cargo", "deprecated", "derive"] }
 dirs-next = "2"
 pulsectl = { git = "https://github.com/aswild/pulsectl" }
-regex = "1.5"
+regex = "1.6"
 serde = { version = "1", features = ["derive"] }
-structopt = "0.3"
 toml = "0.5"
 yall = "0.5"
